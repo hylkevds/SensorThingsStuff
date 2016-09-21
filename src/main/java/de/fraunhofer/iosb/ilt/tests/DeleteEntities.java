@@ -16,11 +16,10 @@
  */
 package de.fraunhofer.iosb.ilt.tests;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -28,12 +27,14 @@ import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
  */
 public class DeleteEntities {
 
+    private static final String BASE_URL = "http://localhost:8080/SensorThingsService/v1.0/";
+
     /**
      * @param args the command line arguments
      * @throws de.fraunhofer.iosb.ilt.sta.ServiceFailureException
      */
     public static void main(String[] args) throws ServiceFailureException, URISyntaxException {
-        URI baseUri = URI.create("http://localhost:8080/SensorThingsService/v1.0/");
+        URI baseUri = URI.create(BASE_URL);
         SensorThingsService service = new SensorThingsService(baseUri);
         Utils.deleteAll(service);
     }
