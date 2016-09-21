@@ -58,7 +58,7 @@ public class CreateEntities {
     /**
      * The number of observations that will be created.
      */
-    private static final int OBSERVATION_COUNT = 500000;
+    private static final int OBSERVATION_COUNT = 50;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateEntities.class.getName());
     private final URI baseUri;
@@ -203,14 +203,10 @@ public class CreateEntities {
 
         int start = 0;
         while (start < totalCount) {
+            if (start + perTask >= totalCount) {
+                perTask = totalCount - start;
+            }
             obsCreator obsCreator = new obsCreator(new SensorThingsService(baseUri), datastream1, start, perTask, dtStart, delta);
-            pool.submit(obsCreator);
-            LOGGER.info("Submitted task for {} observations starting at {}.", perTask, start);
-            start += perTask;
-        }
-        start = 0;
-        while (start < totalCount) {
-            obsCreator obsCreator = new obsCreator(new SensorThingsService(baseUri), datastream2, start, perTask, dtStart, delta);
             pool.submit(obsCreator);
             LOGGER.info("Submitted task for {} observations starting at {}.", perTask, start);
             start += perTask;
