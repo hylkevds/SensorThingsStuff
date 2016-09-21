@@ -16,6 +16,15 @@
  */
 package de.fraunhofer.iosb.ilt.tests;
 
+import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
+import de.fraunhofer.iosb.ilt.sta.model.Datastream;
+import de.fraunhofer.iosb.ilt.sta.model.Location;
+import de.fraunhofer.iosb.ilt.sta.model.Observation;
+import de.fraunhofer.iosb.ilt.sta.model.ObservedProperty;
+import de.fraunhofer.iosb.ilt.sta.model.Sensor;
+import de.fraunhofer.iosb.ilt.sta.model.Thing;
+import de.fraunhofer.iosb.ilt.sta.model.ext.UnitOfMeasurement;
+import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -27,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
@@ -37,24 +45,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.threeten.extra.Interval;
 
-import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
-import de.fraunhofer.iosb.ilt.sta.model.Datastream;
-import de.fraunhofer.iosb.ilt.sta.model.Location;
-import de.fraunhofer.iosb.ilt.sta.model.Observation;
-import de.fraunhofer.iosb.ilt.sta.model.ObservedProperty;
-import de.fraunhofer.iosb.ilt.sta.model.Sensor;
-import de.fraunhofer.iosb.ilt.sta.model.Thing;
-import de.fraunhofer.iosb.ilt.sta.model.ext.UnitOfMeasurement;
-import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
-
 /**
  *
  * @author Hylke van der Schaaf
  */
 public class CreateEntities {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CreateEntities.class.getName());
+    /**
+     * The url to use.
+     */
+    private static final String BASE_URL = "http://localhost:8080/SensorThingsService/v1.0/";
+    /**
+     * The number of observations that will be created.
+     */
     private static final int OBSERVATION_COUNT = 500000;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateEntities.class.getName());
     private final URI baseUri;
     private SensorThingsService service;
     private final List<Thing> things = new ArrayList<>();
@@ -67,9 +73,10 @@ public class CreateEntities {
     /**
      * @param args the command line arguments
      * @throws ServiceFailureException when there is an error.
+     * @throws java.net.URISyntaxException
      */
     public static void main(String[] args) throws ServiceFailureException, URISyntaxException {
-        URI baseUri = URI.create("http://localhost:8080/SensorThingsService/v1.0/");
+        URI baseUri = URI.create(BASE_URL);
         CreateEntities tester = new CreateEntities(baseUri);
         tester.createEntities();
     }
