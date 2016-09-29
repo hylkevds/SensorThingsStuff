@@ -16,20 +16,18 @@
  */
 package de.fraunhofer.iosb.ilt.tests;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
 import de.fraunhofer.iosb.ilt.sta.dao.BaseDao;
 import de.fraunhofer.iosb.ilt.sta.model.Entity;
 import de.fraunhofer.iosb.ilt.sta.model.ext.EntityList;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -95,10 +93,10 @@ public class Utils {
         int count = 0;
         while (more) {
             EntityList<T> entities = doa.query().list();
-            if (entities.getCount() == 0) {
-                more = false;
-            } else {
+            if (entities.getCount() > 0) {
                 LOGGER.info("{} to go.", entities.getCount());
+            } else {
+                more = false;
             }
             for (T entity : entities) {
                 doa.delete(entity);
