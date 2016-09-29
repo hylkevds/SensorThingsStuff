@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.geojson.LineString;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
@@ -135,6 +136,30 @@ public class CreateEntities {
                         new LngLatAlt(7, 53),
                         new LngLatAlt(8, 53)));
         location.getThings().add(things.get(3));
+        service.create(location);
+        locations.add(location);
+
+        // Locations 5
+        location = new Location("Location 5", "A line.", "application/vnd.geo+json",
+                new LineString(
+                        new LngLatAlt(5, 52),
+                        new LngLatAlt(5, 53)));
+        service.create(location);
+        locations.add(location);
+
+        // Locations 6
+        location = new Location("Location 6", "A longer line.", "application/vnd.geo+json",
+                new LineString(
+                        new LngLatAlt(5, 52),
+                        new LngLatAlt(6, 53)));
+        service.create(location);
+        locations.add(location);
+
+        // Locations 7
+        location = new Location("Location 7", "The longest line.", "application/vnd.geo+json",
+                new LineString(
+                        new LngLatAlt(4, 52),
+                        new LngLatAlt(8, 52)));
         service.create(location);
         locations.add(location);
 
