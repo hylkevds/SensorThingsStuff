@@ -25,8 +25,10 @@ import de.fraunhofer.iosb.ilt.sta.model.Sensor;
 import de.fraunhofer.iosb.ilt.sta.model.Thing;
 import de.fraunhofer.iosb.ilt.sta.model.ext.UnitOfMeasurement;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -62,7 +64,7 @@ public class CreateEntities {
     private static final int OBSERVATION_COUNT = 50;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateEntities.class.getName());
-    private final URI baseUri;
+    private final URL baseUri;
     private SensorThingsService service;
     private final List<Thing> things = new ArrayList<>();
     private final List<Location> locations = new ArrayList<>();
@@ -75,9 +77,11 @@ public class CreateEntities {
      * @param args the command line arguments
      * @throws ServiceFailureException when there is an error.
      * @throws java.net.URISyntaxException
+     * @throws java.net.MalformedURLException
      */
-    public static void main(String[] args) throws ServiceFailureException, URISyntaxException {
-        URI baseUri = URI.create(BASE_URL);
+    public static void main(String[] args) throws ServiceFailureException, URISyntaxException, MalformedURLException {
+        LOGGER.info("Creating test entities in {}", BASE_URL);
+        URL baseUri = new URL(BASE_URL);
         CreateEntities tester = new CreateEntities(baseUri);
         tester.createEntities();
     }
@@ -86,7 +90,7 @@ public class CreateEntities {
         this.baseUri = null;
     }
 
-    public CreateEntities(URI baseUri) throws URISyntaxException {
+    public CreateEntities(URL baseUri) throws URISyntaxException {
         this.baseUri = baseUri;
         service = new SensorThingsService(baseUri);
     }

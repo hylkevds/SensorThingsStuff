@@ -16,22 +16,6 @@
  */
 package de.fraunhofer.ilt.sta;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.geojson.LngLatAlt;
-import org.geojson.Point;
-import org.geojson.Polygon;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.threeten.extra.Interval;
-
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
 import de.fraunhofer.iosb.ilt.sta.model.Datastream;
 import de.fraunhofer.iosb.ilt.sta.model.Entity;
@@ -44,6 +28,22 @@ import de.fraunhofer.iosb.ilt.sta.model.ext.EntityList;
 import de.fraunhofer.iosb.ilt.sta.model.ext.UnitOfMeasurement;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
 import de.fraunhofer.iosb.ilt.tests.Utils;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import org.geojson.LngLatAlt;
+import org.geojson.Point;
+import org.geojson.Polygon;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.threeten.extra.Interval;
 
 /**
  * TODO.
@@ -68,8 +68,8 @@ public class FilterTests {
     }
 
     @BeforeClass
-    public static void setUpClass() throws URISyntaxException, ServiceFailureException {
-        URI uri = new URI(BASE_URI);
+    public static void setUpClass() throws URISyntaxException, ServiceFailureException, MalformedURLException {
+        URL uri = new URL(BASE_URI);
         service = new SensorThingsService(uri);
         createEntities();
     }

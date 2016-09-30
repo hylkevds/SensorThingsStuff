@@ -8,8 +8,9 @@
 
     <repositories>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>bintray-fraunhoferiosb-Maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/fraunhoferiosb/Maven</url>
         </repository>
     </repositories>
 
@@ -20,9 +21,9 @@
             <version>1.1.7</version>
         </dependency>
         <dependency>
-            <groupId>com.github.FraunhoferIOSB</groupId>
+            <groupId>de.fraunhofer.iosb.ilt</groupId>
             <artifactId>SensorThingsClient</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>0.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -18,8 +18,11 @@ package de.fraunhofer.iosb.ilt.tests;
 
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,14 +30,21 @@ import java.net.URISyntaxException;
  */
 public class DeleteEntities {
 
+    /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeleteEntities.class);
     private static final String BASE_URL = "http://localhost:8080/SensorThingsService/v1.0/";
 
     /**
      * @param args the command line arguments
      * @throws de.fraunhofer.iosb.ilt.sta.ServiceFailureException
+     * @throws java.net.MalformedURLException
+     * @throws java.net.URISyntaxException
      */
-    public static void main(String[] args) throws ServiceFailureException, URISyntaxException {
-        URI baseUri = URI.create(BASE_URL);
+    public static void main(String[] args) throws ServiceFailureException, MalformedURLException, URISyntaxException {
+        LOGGER.info("Deleting all from {}", BASE_URL);
+        URL baseUri = new URL(BASE_URL);
         SensorThingsService service = new SensorThingsService(baseUri);
         Utils.deleteAll(service);
     }
