@@ -198,25 +198,25 @@ public class CreateEntities {
         datastreams.add(datastream2);
 
         Observation o = new Observation(1, datastream1);
-        o.setPhenomenonTime(ZonedDateTime.parse("2016-01-01T01:01:01.000Z"));
+        o.setPhenomenonTimeFrom(ZonedDateTime.parse("2016-01-01T01:01:01.000Z"));
         o.setValidTime(Interval.of(Instant.parse("2016-01-01T01:01:01.000Z"), Instant.parse("2016-01-01T23:59:59.999Z")));
         service.create(o);
         observations.add(o);
 
         o = new Observation(2, datastream1);
-        o.setPhenomenonTime(ZonedDateTime.parse("2016-01-02T01:01:01.000Z"));
+        o.setPhenomenonTimeFrom(ZonedDateTime.parse("2016-01-02T01:01:01.000Z"));
         o.setValidTime(Interval.of(Instant.parse("2016-01-02T01:01:01.000Z"), Instant.parse("2016-01-02T23:59:59.999Z")));
         service.create(o);
         observations.add(o);
 
         o = new Observation(3, datastream1);
-        o.setPhenomenonTime(ZonedDateTime.parse("2016-01-03T01:01:01.000Z"));
+        o.setPhenomenonTimeFrom(ZonedDateTime.parse("2016-01-03T01:01:01.000Z"));
         o.setValidTime(Interval.of(Instant.parse("2016-01-03T01:01:01.000Z"), Instant.parse("2016-01-03T23:59:59.999Z")));
         service.create(o);
         observations.add(o);
 
         o = new Observation(4, datastream1);
-        o.setPhenomenonTime(ZonedDateTime.parse("2016-01-04T01:01:01.000Z"));
+        o.setPhenomenonTimeFrom(ZonedDateTime.parse("2016-01-04T01:01:01.000Z"));
         o.setValidTime(Interval.of(Instant.parse("2016-01-04T01:01:01.000Z"), Instant.parse("2016-01-04T23:59:59.999Z")));
         service.create(o);
         observations.add(o);
@@ -279,7 +279,7 @@ public class CreateEntities {
                 for (i = start; i < end; i++) {
                     Observation o = new Observation(i, datastream);
                     long millis = startTime.plus(deltaPerObs.multipliedBy(i)).getMillis();
-                    o.setPhenomenonTime(ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()));
+                    o.setPhenomenonTimeFrom(ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()));
                     service.create(o);
                 }
             } catch (ServiceFailureException ex) {

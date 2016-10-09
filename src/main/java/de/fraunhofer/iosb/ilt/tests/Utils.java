@@ -37,7 +37,23 @@ public class Utils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getName());
 
-    public static boolean resultContains(EntityList<? extends Entity> result, Entity... entities) {
+    /**
+     * Class returned by checks on results. Encapsulates the result of the
+     * check, and the message.
+     */
+    public static class resultTestResult {
+
+        public final boolean testOk;
+        public final String message;
+
+        public resultTestResult(boolean testOk, String message) {
+            this.testOk = testOk;
+            this.message = message;
+        }
+
+    }
+
+    public static resultTestResult resultContains(EntityList<? extends Entity> result, Entity... entities) {
         return resultContains(result, new ArrayList(Arrays.asList(entities)));
     }
 
@@ -48,25 +64,26 @@ public class Utils {
      * @param entityList
      * @return
      */
-    public static boolean resultContains(EntityList<? extends Entity> result, List<? extends Entity> entityList) {
+    public static resultTestResult resultContains(EntityList<? extends Entity> result, List<? extends Entity> entityList) {
         long count = result.getCount();
         if (count != -1 && count != entityList.size()) {
             LOGGER.info("Result count ({}) not equal to expected count ({})", count, entityList.size());
-            return false;
+            return new resultTestResult(false, "Result count " + count + " not equal to expected count (" + entityList.size() + ")");
         }
         Iterator<? extends Entity> it;
         for (it = result.fullIterator(); it.hasNext();) {
             Entity next = it.next();
             Entity inList = findEntityIn(next, entityList);
             if (!entityList.remove(inList)) {
-                LOGGER.info("Entity found in result that is not expected.");
-                return false;
+                LOGGER.info("Entity with id {} found in result that is not expected.", next.getId());
+                return new resultTestResult(false, "Entity with id " + next.getId() + " found in result that is not expected.");
             }
         }
         if (!entityList.isEmpty()) {
             LOGGER.info("Expected entity not found in result.");
+            return new resultTestResult(false, entityList.size() + " expected entities not in result.");
         }
-        return entityList.isEmpty();
+        return new resultTestResult(true, "Check ok.");
     }
 
     public static Entity findEntityIn(Entity entity, List<? extends Entity> entities) {

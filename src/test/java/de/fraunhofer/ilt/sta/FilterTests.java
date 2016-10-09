@@ -17,6 +17,9 @@
 package de.fraunhofer.ilt.sta;
 
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
+import de.fraunhofer.iosb.ilt.sta.dao.BaseDao;
+import de.fraunhofer.iosb.ilt.sta.dao.ObservationDao;
+import de.fraunhofer.iosb.ilt.sta.dao.ThingDao;
 import de.fraunhofer.iosb.ilt.sta.model.Datastream;
 import de.fraunhofer.iosb.ilt.sta.model.Entity;
 import de.fraunhofer.iosb.ilt.sta.model.Location;
@@ -36,6 +39,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.geojson.LineString;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
@@ -131,6 +135,30 @@ public class FilterTests {
         service.create(location);
         LOCATIONS.add(location);
 
+        // Locations 5
+        location = new Location("Location 5", "A line.", "application/vnd.geo+json",
+                new LineString(
+                        new LngLatAlt(5, 52),
+                        new LngLatAlt(5, 53)));
+        service.create(location);
+        LOCATIONS.add(location);
+
+        // Locations 6
+        location = new Location("Location 6", "A longer line.", "application/vnd.geo+json",
+                new LineString(
+                        new LngLatAlt(5, 52),
+                        new LngLatAlt(6, 53)));
+        service.create(location);
+        LOCATIONS.add(location);
+
+        // Locations 7
+        location = new Location("Location 7", "The longest line.", "application/vnd.geo+json",
+                new LineString(
+                        new LngLatAlt(4, 52),
+                        new LngLatAlt(8, 52)));
+        service.create(location);
+        LOCATIONS.add(location);
+
         Sensor sensor = new Sensor("Sensor 1", "The first sensor.", "text", "Some metadata.");
         service.create(sensor);
         SENSORS.add(sensor);
@@ -147,267 +175,154 @@ public class FilterTests {
         DATASTREAMS.add(datastream);
 
         Observation o = new Observation(1, datastream);
-        o.setPhenomenonTime(ZonedDateTime.parse("2016-01-01T01:01:01.000Z"));
+        o.setPhenomenonTimeFrom(ZonedDateTime.parse("2016-01-01T01:01:01.000Z"));
         o.setValidTime(Interval.of(Instant.parse("2016-01-01T01:01:01.000Z"), Instant.parse("2016-01-01T23:59:59.999Z")));
         service.create(o);
         OBSERVATIONS.add(o);
 
         o = new Observation(2, datastream);
-        o.setPhenomenonTime(ZonedDateTime.parse("2016-01-02T01:01:01.000Z"));
+        o.setPhenomenonTimeFrom(ZonedDateTime.parse("2016-01-02T01:01:01.000Z"));
         o.setValidTime(Interval.of(Instant.parse("2016-01-02T01:01:01.000Z"), Instant.parse("2016-01-02T23:59:59.999Z")));
         service.create(o);
         OBSERVATIONS.add(o);
 
         o = new Observation(3, datastream);
-        o.setPhenomenonTime(ZonedDateTime.parse("2016-01-03T01:01:01.000Z"));
+        o.setPhenomenonTimeFrom(ZonedDateTime.parse("2016-01-03T01:01:01.000Z"));
         o.setValidTime(Interval.of(Instant.parse("2016-01-03T01:01:01.000Z"), Instant.parse("2016-01-03T23:59:59.999Z")));
         service.create(o);
         OBSERVATIONS.add(o);
 
         o = new Observation(4, datastream);
-        o.setPhenomenonTime(ZonedDateTime.parse("2016-01-04T01:01:01.000Z"));
+        o.setPhenomenonTimeFrom(ZonedDateTime.parse("2016-01-04T01:01:01.000Z"));
         o.setValidTime(Interval.of(Instant.parse("2016-01-04T01:01:01.000Z"), Instant.parse("2016-01-04T23:59:59.999Z")));
         service.create(o);
         OBSERVATIONS.add(o);
 
     }
 
+    public void filterAndCheck(BaseDao doa, String filter, List<? extends Entity> expected) {
+        try {
+            EntityList<Observation> result = doa.query().filter(filter).list();
+            Utils.resultTestResult check = Utils.resultContains(result, expected);
+            Assert.assertTrue("Failed on filter: " + filter + " Cause: " + check.message, check.testOk);
+        } catch (ServiceFailureException ex) {
+            Assert.fail("Failed to call service.");
+        }
+    }
+
     @Test
     public void testIndirectFilter() throws ServiceFailureException {
-        EntityList<Thing> result = service.things()
-                .query()
-                .filter("Locations/name eq 'Location 2'")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, THINGS.get(1)));
-        result = service.things()
-                .query()
-                .filter("startswith(HistoricalLocations/Location/name, 'Location 1')")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, THINGS.get(0)));
+        ThingDao doa = service.things();
+        filterAndCheck(doa, "Locations/name eq 'Location 2'", getFromList(THINGS, 1));
+        filterAndCheck(doa, "startswith(HistoricalLocations/Location/name, 'Location 1')", getFromList(THINGS, 0));
     }
 
     @Test
     public void testTimeInterval() throws ServiceFailureException {
-        EntityList<Observation> result = service.observations()
-                .query()
-                .filter("validTime gt 2016-01-03T01:01:00Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 2, 3)));
-        result = service.observations()
-                .query()
-                .filter("validTime lt 2016-01-03T01:01:00Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 0, 1)));
+        ObservationDao doa = service.observations();
+        filterAndCheck(doa, "validTime gt 2016-01-03T01:01:00Z", getFromList(OBSERVATIONS, 2, 3));
 
-        result = service.observations()
-                .query()
-                .filter("validTime gt 2016-01-03T01:01:02Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 3)));
-        result = service.observations()
-                .query()
-                .filter("validTime lt 2016-01-03T01:01:02Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 0, 1)));
+        filterAndCheck(doa, "validTime lt 2016-01-03T01:01:00Z", getFromList(OBSERVATIONS, 0, 1));
+
+        filterAndCheck(doa, "validTime gt 2016-01-03T01:01:02Z", getFromList(OBSERVATIONS, 3));
+        filterAndCheck(doa, "validTime lt 2016-01-03T01:01:02Z", getFromList(OBSERVATIONS, 0, 1));
 
         // time interval >= or <= time instant
-        result = service.observations()
-                .query()
-                .filter("validTime ge 2016-01-03T01:01:02Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 2, 3)));
-        result = service.observations()
-                .query()
-                .filter("validTime le 2016-01-03T01:01:02Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 0, 1, 2)));
+        filterAndCheck(doa, "validTime ge 2016-01-03T01:01:02Z", getFromList(OBSERVATIONS, 2, 3));
+        filterAndCheck(doa, "validTime le 2016-01-03T01:01:02Z", getFromList(OBSERVATIONS, 0, 1, 2));
 
         // time instant >= or <= time interval
-        result = service.observations()
-                .query()
-                .filter("2016-01-03T01:01:02Z le validTime")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 2, 3)));
-        result = service.observations()
-                .query()
-                .filter("2016-01-03T01:01:02Z ge validTime")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 0, 1, 2)));
+        filterAndCheck(doa, "2016-01-03T01:01:02Z le validTime", getFromList(OBSERVATIONS, 2, 3));
+        filterAndCheck(doa, "2016-01-03T01:01:02Z ge validTime", getFromList(OBSERVATIONS, 0, 1, 2));
 
         // time instant < or > time instant
-        result = service.observations()
-                .query()
-                .filter("validTime lt 2016-01-02T01:01:01.000Z/2016-01-03T23:59:59.999Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 0)));
-        result = service.observations()
-                .query()
-                .filter("validTime gt 2016-01-02T01:01:01.000Z/2016-01-03T23:59:59.999Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 3)));
+        filterAndCheck(doa, "validTime lt 2016-01-02T01:01:01.000Z/2016-01-03T23:59:59.999Z", getFromList(OBSERVATIONS, 0));
+        filterAndCheck(doa, "validTime gt 2016-01-02T01:01:01.000Z/2016-01-03T23:59:59.999Z", getFromList(OBSERVATIONS, 3));
 
         // time interval eq time instant
-        result = service.observations()
-                .query()
-                .filter("not validTime lt 2016-01-03T12:00:00Z and not validTime gt 2016-01-03T12:00:00Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 2)));
-        result = service.observations()
-                .query()
-                .filter("validTime eq 2016-01-03T12:00:00Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 2)));
-        result = service.observations()
-                .query()
-                .filter("validTime ne 2016-01-03T12:00:00Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 0, 1, 3)));
+        filterAndCheck(doa, "not validTime lt 2016-01-03T12:00:00Z and not validTime gt 2016-01-03T12:00:00Z", getFromList(OBSERVATIONS, 2));
+        filterAndCheck(doa, "validTime eq 2016-01-03T12:00:00Z", getFromList(OBSERVATIONS, 2));
+        filterAndCheck(doa, "validTime ne 2016-01-03T12:00:00Z", getFromList(OBSERVATIONS, 0, 1, 3));
 
         // Durations
-        result = service.observations()
-                .query()
-                .filter("validTime add duration'P1D' gt 2016-01-03T01:01:00Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 1, 2, 3)));
-        result = service.observations()
-                .query()
-                .filter("validTime gt 2016-01-03T01:01:00Z sub duration'P1D'")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 1, 2, 3)));
-        result = service.observations()
-                .query()
-                .filter("validTime sub duration'P1D' gt 2016-01-03T01:01:00Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 3)));
+        filterAndCheck(doa, "validTime add duration'P1D' gt 2016-01-03T01:01:00Z", getFromList(OBSERVATIONS, 1, 2, 3));
+        filterAndCheck(doa, "validTime gt 2016-01-03T01:01:00Z sub duration'P1D'", getFromList(OBSERVATIONS, 1, 2, 3));
+        filterAndCheck(doa, "validTime sub duration'P1D' gt 2016-01-03T01:01:00Z", getFromList(OBSERVATIONS, 3));
 
-        result = service.observations()
-                .query()
-                .filter("validTime lt 2016-01-02T01:01:01.000Z/2016-01-03T23:59:59.999Z add duration'P1D'")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 0, 1)));
-        result = service.observations()
-                .query()
-                .filter("validTime gt 2016-01-02T01:01:01.000Z/2016-01-03T23:59:59.999Z sub duration'P1D'")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 2, 3)));
+        filterAndCheck(doa, "validTime lt 2016-01-02T01:01:01.000Z/2016-01-03T23:59:59.999Z add duration'P1D'", getFromList(OBSERVATIONS, 0, 1));
+        filterAndCheck(doa, "validTime gt 2016-01-02T01:01:01.000Z/2016-01-03T23:59:59.999Z sub duration'P1D'", getFromList(OBSERVATIONS, 2, 3));
 
         // interval eq interval
-        result = service.observations()
-                .query()
-                .filter("validTime eq 2016-01-02T01:01:01.000Z/2016-01-02T23:59:59.999Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 1)));
-        result = service.observations()
-                .query()
-                .filter("validTime ne 2016-01-02T01:01:01.000Z/2016-01-02T23:59:59.999Z")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 0, 2, 3)));
+        filterAndCheck(doa, "validTime eq 2016-01-02T01:01:01.000Z/2016-01-02T23:59:59.999Z", getFromList(OBSERVATIONS, 1));
+        filterAndCheck(doa, "validTime ne 2016-01-02T01:01:01.000Z/2016-01-02T23:59:59.999Z", getFromList(OBSERVATIONS, 0, 2, 3));
 
-        result = service.observations()
-                .query()
-                .filter("phenomenonTime sub 2016-01-03T01:01:01.000Z eq duration'P1D'")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, getFromList(OBSERVATIONS, 3)));
+        filterAndCheck(doa, "phenomenonTime sub 2016-01-03T01:01:01.000Z eq duration'P1D'", getFromList(OBSERVATIONS, 3));
 
     }
 
     @Test
     public void testGeoDistance() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("geo.distance(location, geography'POINT(8 54.1)') lt 1")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(3)));
+        filterAndCheck(service.locations(), "geo.distance(location, geography'POINT(8 54.1)') lt 1", getFromList(LOCATIONS, 3));
     }
 
     @Test
     public void testGeoIntersects() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("geo.intersects(location, geography'LINESTRING(7.5 51, 7.5 54)')")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(4)));
+        filterAndCheck(service.locations(), "geo.intersects(location, geography'LINESTRING(7.5 51, 7.5 54)')", getFromList(LOCATIONS, 4, 7));
+    }
+
+    @Test
+    public void testGeoLength() throws ServiceFailureException {
+        filterAndCheck(service.locations(), "geo.length(location) gt 1", getFromList(LOCATIONS, 6, 7));
+        filterAndCheck(service.locations(), "geo.length(location) ge 1", getFromList(LOCATIONS, 5, 6, 7));
+        filterAndCheck(service.locations(), "geo.length(location) eq 1", getFromList(LOCATIONS, 5));
+        filterAndCheck(service.locations(), "geo.length(location) ne 1", getFromList(LOCATIONS, 0, 1, 2, 3, 4, 6, 7));
+        filterAndCheck(service.locations(), "geo.length(location) le 4", getFromList(LOCATIONS, 0, 1, 2, 3, 4, 5, 6, 7));
+        filterAndCheck(service.locations(), "geo.length(location) lt 4", getFromList(LOCATIONS, 0, 1, 2, 3, 4, 5, 6));
     }
 
     @Test
     public void testStContains() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_contains(geography'POLYGON((7.5 51.5, 7.5 53.5, 8.5 53.5, 8.5 51.5, 7.5 51.5))', location)")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(1), LOCATIONS.get(2)));
+        filterAndCheck(service.locations(), "st_contains(geography'POLYGON((7.5 51.5, 7.5 53.5, 8.5 53.5, 8.5 51.5, 7.5 51.5))', location)", getFromList(LOCATIONS, 1, 2));
     }
 
     @Test
     public void testStCrosses() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_crosses(geography'LINESTRING(7.5 51.5, 7.5 53.5)', location)")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(4)));
+        filterAndCheck(service.locations(), "st_crosses(geography'LINESTRING(7.5 51.5, 7.5 53.5)', location)", getFromList(LOCATIONS, 4, 7));
     }
 
     @Test
     public void testStDisjoint() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_disjoint(geography'POLYGON((7.5 51.5, 7.5 53.5, 8.5 53.5, 8.5 51.5, 7.5 51.5))', location)")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(0), LOCATIONS.get(3)));
+        filterAndCheck(service.locations(), "st_disjoint(geography'POLYGON((7.5 51.5, 7.5 53.5, 8.5 53.5, 8.5 51.5, 7.5 51.5))', location)", getFromList(LOCATIONS, 0, 3, 5, 6));
     }
 
     @Test
     public void testStEquals() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_equals(location, geography'POINT(8 53)')")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(2)));
+        filterAndCheck(service.locations(), "st_equals(location, geography'POINT(8 53)')", getFromList(LOCATIONS, 2));
     }
 
     @Test
     public void testStIntersects() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_intersects(location, geography'LINESTRING(7.5 51, 7.5 54)')")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(4)));
+        filterAndCheck(service.locations(), "st_intersects(location, geography'LINESTRING(7.5 51, 7.5 54)')", getFromList(LOCATIONS, 4, 7));
     }
 
     @Test
     public void testStOverlaps() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_overlaps(geography'POLYGON((7.5 51.5, 7.5 53.5, 8.5 53.5, 8.5 51.5, 7.5 51.5))', location)")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(4)));
+        filterAndCheck(service.locations(), "st_overlaps(geography'POLYGON((7.5 51.5, 7.5 53.5, 8.5 53.5, 8.5 51.5, 7.5 51.5))', location)", getFromList(LOCATIONS, 4));
     }
 
     @Test
     public void testStRelate() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_relate(geography'POLYGON((7.5 51.5, 7.5 53.5, 8.5 53.5, 8.5 51.5, 7.5 51.5))', location, 'T********')")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(1), LOCATIONS.get(2), LOCATIONS.get(4)));
+        filterAndCheck(service.locations(), "st_relate(geography'POLYGON((7.5 51.5, 7.5 53.5, 8.5 53.5, 8.5 51.5, 7.5 51.5))', location, 'T********')", getFromList(LOCATIONS, 1, 2, 4, 7));
     }
 
     @Test
     public void testStTouches() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_touches(geography'POLYGON((8 53, 7.5 54.5, 8.5 54.5, 8 53))', location)")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(2), LOCATIONS.get(4)));
+        filterAndCheck(service.locations(), "st_touches(geography'POLYGON((8 53, 7.5 54.5, 8.5 54.5, 8 53))', location)", getFromList(LOCATIONS, 2, 4));
     }
 
     @Test
     public void testStWithin() throws ServiceFailureException {
-        EntityList<Location> result = service.locations()
-                .query()
-                .filter("st_within(geography'POINT(7.5 52.75)', location)")
-                .list();
-        Assert.assertTrue(Utils.resultContains(result, LOCATIONS.get(4)));
+        filterAndCheck(service.locations(), "st_within(geography'POINT(7.5 52.75)', location)", getFromList(LOCATIONS, 4));
     }
 
     public static <T extends Entity<T>> List<T> getFromList(List<T> list, int... ids) {
