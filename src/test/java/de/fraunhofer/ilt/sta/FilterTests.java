@@ -203,7 +203,7 @@ public class FilterTests {
     public void filterAndCheck(BaseDao doa, String filter, List<? extends Entity> expected) {
         try {
             EntityList<Observation> result = doa.query().filter(filter).list();
-            Utils.resultTestResult check = Utils.resultContains(result, expected);
+            Utils.TestResult check = Utils.resultContains(result, expected);
             Assert.assertTrue("Failed on filter: " + filter + " Cause: " + check.message, check.testOk);
         } catch (ServiceFailureException ex) {
             Assert.fail("Failed to call service.");

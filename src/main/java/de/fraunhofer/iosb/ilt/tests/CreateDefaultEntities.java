@@ -91,6 +91,8 @@ public class CreateDefaultEntities {
         ds1.setSensor(new Sensor("sensor name 1", "sensor 1", "application/pdf", "Light flux sensor"));
         ds1.getObservations().add(new Observation(3, ZonedDateTime.parse("2015-03-03T00:00:00Z")));
         ds1.getObservations().add(new Observation(4, ZonedDateTime.parse("2015-03-04T00:00:00Z")));
+        ds1.getObservations().add(new Observation("three", ZonedDateTime.parse("2015-03-03T00:00:00Z")));
+        ds1.getObservations().add(new Observation("four", ZonedDateTime.parse("2015-03-04T00:00:00Z")));
         thing.getDatastreams().add(ds1);
 
         UnitOfMeasurement um2 = new UnitOfMeasurement("Centigrade", "C", "http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html/Lumen");
@@ -99,6 +101,8 @@ public class CreateDefaultEntities {
         ds2.setSensor(new Sensor("sensor name 2", "sensor 2", "application/pdf", "Tempreture sensor"));
         ds2.getObservations().add(new Observation(5, ZonedDateTime.parse("2015-03-05T00:00:00Z")));
         ds2.getObservations().add(new Observation(6, ZonedDateTime.parse("2015-03-06T00:00:00Z")));
+        ds2.getObservations().add(new Observation("Five", ZonedDateTime.parse("2015-03-05T00:00:00Z")));
+        ds2.getObservations().add(new Observation("Six", ZonedDateTime.parse("2015-03-06T00:00:00Z")));
         thing.getDatastreams().add(ds2);
 
         service.create(thing);
