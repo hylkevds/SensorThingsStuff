@@ -34,7 +34,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -96,15 +98,34 @@ public class CreateEntities {
     }
 
     private void createEntities() throws ServiceFailureException, URISyntaxException {
+        Map<String, Object> properties1 = new HashMap<>();
+        properties1.put("name", "properties1");
+        properties1.put("prop1", "yes");
+        properties1.put("prop2", true);
+        properties1.put("prop3", 1);
         Thing thing = new Thing("Thing 1", "The first thing.");
+        thing.setProperties(properties1);
         service.create(thing);
         things.add(thing);
 
+        Map<String, Object> properties2 = new HashMap<>();
+        properties2.put("name", "properties2");
+        properties2.put("prop1", "no");
+        properties2.put("prop2", false);
+        properties2.put("prop3", 0);
+        properties2.put("deep", properties1);
         thing = new Thing("Thing 2", "The second thing.");
+        thing.setProperties(properties2);
         service.create(thing);
         things.add(thing);
 
+        Map<String, Object> properties3 = new HashMap<>();
+        properties3.put("name", "properties3");
+        properties3.put("prop1", "yes");
+        properties3.put("prop2", true);
+        properties3.put("prop3", 2);
         thing = new Thing("Thing 3", "The third thing.");
+        thing.setProperties(properties3);
         service.create(thing);
         things.add(thing);
 
