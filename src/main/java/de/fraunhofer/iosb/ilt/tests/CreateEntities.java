@@ -263,7 +263,8 @@ public class CreateEntities {
 
         long endTime = Calendar.getInstance().getTimeInMillis();
         long duration = endTime - startTime;
-        LOGGER.info("Created {} obs in {}ms.", totalCount, duration);
+        double secs = duration / 1000.0;
+        LOGGER.info("Created {} obs in {}ms, {}/s.", totalCount, duration, totalCount / secs);
     }
 
     private final static class obsCreator implements Runnable {
