@@ -30,6 +30,7 @@ import de.fraunhofer.iosb.ilt.sta.model.Thing;
 import de.fraunhofer.iosb.ilt.sta.model.ext.EntityList;
 import de.fraunhofer.iosb.ilt.sta.model.ext.UnitOfMeasurement;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
+import de.fraunhofer.iosb.ilt.tests.Constants;
 import de.fraunhofer.iosb.ilt.tests.Utils;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -59,7 +60,6 @@ import org.threeten.extra.Interval;
  */
 public class FilterTests {
 
-    private static final String BASE_URI = "http://localhost:8080/SensorThingsService/v1.0";
     private static SensorThingsService service;
     private static final List<Thing> THINGS = new ArrayList<>();
     private static final List<Location> LOCATIONS = new ArrayList<>();
@@ -73,8 +73,8 @@ public class FilterTests {
 
     @BeforeClass
     public static void setUpClass() throws URISyntaxException, ServiceFailureException, MalformedURLException {
-        URL uri = new URL(BASE_URI);
-        service = new SensorThingsService(uri);
+        URL url = new URL(Constants.BASE_URL);
+        service = Constants.createService(url);
         createEntities();
     }
 

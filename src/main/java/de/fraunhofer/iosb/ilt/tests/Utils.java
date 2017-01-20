@@ -105,7 +105,7 @@ public class Utils {
         deleteAll(sts.observations());
     }
 
-    public static <T extends Entity> void deleteAll(BaseDao<T> doa) throws ServiceFailureException {
+    public static <T extends Entity<T>> void deleteAll(BaseDao<T> doa) throws ServiceFailureException {
         boolean more = true;
         int count = 0;
         while (more) {

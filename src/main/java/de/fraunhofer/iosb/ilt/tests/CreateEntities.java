@@ -25,6 +25,7 @@ import de.fraunhofer.iosb.ilt.sta.model.Sensor;
 import de.fraunhofer.iosb.ilt.sta.model.Thing;
 import de.fraunhofer.iosb.ilt.sta.model.ext.UnitOfMeasurement;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
+import de.fraunhofer.iosb.ilt.sta.service.TokenManager;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,17 +58,13 @@ import org.threeten.extra.Interval;
 public class CreateEntities {
 
     /**
-     * The url to use.
-     */
-    private static final String BASE_URL = "http://localhost:8080/SensorThingsService/v1.0/";
-    /**
      * The number of observations that will be created.
      */
     private static final int OBSERVATION_COUNT = 50;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateEntities.class.getName());
-    private final URL baseUri;
     private SensorThingsService service;
+    private TokenManager tokenManager;
     private final List<Thing> things = new ArrayList<>();
     private final List<Location> locations = new ArrayList<>();
     private final List<Sensor> sensors = new ArrayList<>();
@@ -82,22 +79,16 @@ public class CreateEntities {
      * @throws java.net.MalformedURLException
      */
     public static void main(String[] args) throws ServiceFailureException, URISyntaxException, MalformedURLException {
-        LOGGER.info("Creating test entities in {}", BASE_URL);
-        URL baseUri = new URL(BASE_URL);
-        CreateEntities tester = new CreateEntities(baseUri);
+        LOGGER.info("Creating test entities in {}", Constants.BASE_URL);
+        CreateEntities tester = new CreateEntities();
         tester.createEntities();
     }
 
-    public CreateEntities() {
-        this.baseUri = null;
+    public CreateEntities() throws MalformedURLException, URISyntaxException {
+        service = Constants.createService();
     }
 
-    public CreateEntities(URL baseUri) throws URISyntaxException {
-        this.baseUri = baseUri;
-        service = new SensorThingsService(baseUri);
-    }
-
-    private void createEntities() throws ServiceFailureException, URISyntaxException {
+    private void createEntities() throws ServiceFailureException, URISyntaxException, MalformedURLException {
         Map<String, Object> properties1 = new HashMap<>();
         properties1.put("name", "properties1");
         properties1.put("prop1", "yes");
@@ -256,7 +247,9 @@ public class CreateEntities {
             if (start + perTask >= totalCount) {
                 perTask = totalCount - start;
             }
-            obsCreator obsCreator = new obsCreator(new SensorThingsService(baseUri), datastream1, start, perTask, dtStart, delta);
+            obsCreator obsCreator = new obsCreator(
+                    new SensorThingsService(new URL(Constants.BASE_URL)).setTokenManager(service.getTokenManager()),
+                    datastream1, start, perTask, dtStart, delta);
             pool.submit(obsCreator);
             LOGGER.info("Submitted task for {} observations starting at {}.", perTask, start);
             start += perTask;

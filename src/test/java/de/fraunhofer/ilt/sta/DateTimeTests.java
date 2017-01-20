@@ -30,6 +30,7 @@ import de.fraunhofer.iosb.ilt.sta.model.TimeObject;
 import de.fraunhofer.iosb.ilt.sta.model.ext.EntityList;
 import de.fraunhofer.iosb.ilt.sta.model.ext.UnitOfMeasurement;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
+import de.fraunhofer.iosb.ilt.tests.Constants;
 import de.fraunhofer.iosb.ilt.tests.Utils;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -93,8 +94,7 @@ public class DateTimeTests {
 
     @BeforeClass
     public static void setUp() {
-
-        rootUri = "http://localhost:8080/SensorThingsService/v1.0";
+        rootUri = Constants.BASE_URL;
         rootUri = rootUri.trim();
         if (rootUri.lastIndexOf('/') == rootUri.length() - 1) {
             rootUri = rootUri.substring(0, rootUri.length() - 1);
@@ -102,7 +102,7 @@ public class DateTimeTests {
         URL url;
         try {
             url = new URL(rootUri);
-            service = new SensorThingsService(url);
+            service = Constants.createService(url);
             createEntities();
         } catch (MalformedURLException | URISyntaxException ex) {
             LOGGER.error("Failed to create service uri.", ex);

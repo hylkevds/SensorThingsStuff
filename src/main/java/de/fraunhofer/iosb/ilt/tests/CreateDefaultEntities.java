@@ -28,7 +28,6 @@ import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,15 +42,10 @@ import org.slf4j.LoggerFactory;
 public class CreateDefaultEntities {
 
     /**
-     * The url to use.
-     */
-    private static final String BASE_URL = "http://localhost:8080/SensorThingsService/v1.0/";
-
-    /**
      * The logger for this class.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateDefaultEntities.class);
-    private SensorThingsService service;
+    private final SensorThingsService service;
 
     /**
      * @param args the command line arguments
@@ -60,14 +54,13 @@ public class CreateDefaultEntities {
      * @throws java.net.MalformedURLException
      */
     public static void main(String[] args) throws ServiceFailureException, URISyntaxException, MalformedURLException {
-        LOGGER.info("Creating test entities in {}", BASE_URL);
-        URL baseUri = new URL(BASE_URL);
-        CreateDefaultEntities tester = new CreateDefaultEntities(baseUri);
+        LOGGER.info("Creating test entities in {}", Constants.BASE_URL);
+        CreateDefaultEntities tester = new CreateDefaultEntities();
         tester.createEntities();
     }
 
-    public CreateDefaultEntities(URL baseUri) throws URISyntaxException {
-        service = new SensorThingsService(baseUri);
+    public CreateDefaultEntities() throws URISyntaxException, MalformedURLException {
+        service = Constants.createService();
     }
 
     private void createEntities() throws ServiceFailureException, URISyntaxException {
