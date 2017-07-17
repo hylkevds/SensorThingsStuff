@@ -78,26 +78,32 @@ public class CreateDefaultEntities {
         location.setEncodingType("application/vnd.geo+json");
         thing.getLocations().add(location);
 
-        UnitOfMeasurement um1 = new UnitOfMeasurement("Lumen", "lm", "http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html/Lumen");
-        Datastream ds1 = new Datastream("datastream name 1", "datastream 1", "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement", um1);
-        ds1.setObservedProperty(new ObservedProperty("Luminous Flux", new URI("http://www.qudt.org/qudt/owl/1.0.0/quantity/Instances.html/LuminousFlux"), "observedProperty 1"));
-        ds1.setSensor(new Sensor("sensor name 1", "sensor 1", "application/pdf", "Light flux sensor"));
-        ds1.getObservations().add(new Observation(3, ZonedDateTime.parse("2015-03-03T00:00:00Z")));
-        ds1.getObservations().add(new Observation(4, ZonedDateTime.parse("2015-03-04T00:00:00Z")));
-        ds1.getObservations().add(new Observation("three", ZonedDateTime.parse("2015-03-03T00:00:00Z")));
-        ds1.getObservations().add(new Observation("four", ZonedDateTime.parse("2015-03-04T00:00:00Z")));
-        thing.getDatastreams().add(ds1);
-
-        UnitOfMeasurement um2 = new UnitOfMeasurement("Centigrade", "C", "http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html/Lumen");
-        Datastream ds2 = new Datastream("datastream name 2", "datastream 2", "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement", um2);
-        ds2.setObservedProperty(new ObservedProperty("Tempretaure", new URI("http://www.qudt.org/qudt/owl/1.0.0/quantity/Instances.html/Tempreture"), "observedProperty 2"));
-        ds2.setSensor(new Sensor("sensor name 2", "sensor 2", "application/pdf", "Tempreture sensor"));
-        ds2.getObservations().add(new Observation(5, ZonedDateTime.parse("2015-03-05T00:00:00Z")));
-        ds2.getObservations().add(new Observation(6, ZonedDateTime.parse("2015-03-06T00:00:00Z")));
-        ds2.getObservations().add(new Observation("Five", ZonedDateTime.parse("2015-03-05T00:00:00Z")));
-        ds2.getObservations().add(new Observation("Six", ZonedDateTime.parse("2015-03-06T00:00:00Z")));
-        thing.getDatastreams().add(ds2);
-
+        {
+            UnitOfMeasurement um1 = new UnitOfMeasurement("Lumen", "lm", "http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html/Lumen");
+            Datastream ds1 = new Datastream("datastream name 1", "datastream 1", "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement", um1);
+            ds1.setObservedProperty(new ObservedProperty("Luminous Flux", new URI("http://www.qudt.org/qudt/owl/1.0.0/quantity/Instances.html/LuminousFlux"), "observedProperty 1"));
+            ds1.setSensor(new Sensor("sensor name 1", "sensor 1", "application/pdf", "Light flux sensor"));
+            ds1.getObservations().add(new Observation(7, ZonedDateTime.parse("2019-03-07T00:00:00Z")));
+            ds1.getObservations().add(new Observation(8, ZonedDateTime.parse("2019-03-08T00:00:00Z")));
+            ds1.getObservations().add(new Observation(9, ZonedDateTime.parse("2019-03-09T00:00:00Z")));
+            ds1.getObservations().add(new Observation(10, ZonedDateTime.parse("2019-03-10T00:00:00Z")));
+            ds1.getObservations().add(new Observation(11, ZonedDateTime.parse("2019-03-11T00:00:00Z")));
+            ds1.getObservations().add(new Observation(12, ZonedDateTime.parse("2019-03-12T00:00:00Z")));
+            thing.getDatastreams().add(ds1);
+        }
+        {
+            UnitOfMeasurement um2 = new UnitOfMeasurement("Centigrade", "C", "http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html/Lumen");
+            Datastream ds2 = new Datastream("datastream name 2", "datastream 2", "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement", um2);
+            ds2.setObservedProperty(new ObservedProperty("Tempretaure", new URI("http://www.qudt.org/qudt/owl/1.0.0/quantity/Instances.html/Tempreture"), "observedProperty 2"));
+            ds2.setSensor(new Sensor("sensor name 2", "sensor 2", "application/pdf", "Tempreture sensor"));
+            ds2.getObservations().add(new Observation("7", ZonedDateTime.parse("2019-03-07T00:00:00Z")));
+            ds2.getObservations().add(new Observation("8", ZonedDateTime.parse("2019-03-08T00:00:00Z")));
+            ds2.getObservations().add(new Observation("9", ZonedDateTime.parse("2019-03-09T00:00:00Z")));
+            ds2.getObservations().add(new Observation("10", ZonedDateTime.parse("2019-03-10T00:00:00Z")));
+            ds2.getObservations().add(new Observation("11", ZonedDateTime.parse("2019-03-11T00:00:00Z")));
+            ds2.getObservations().add(new Observation("12", ZonedDateTime.parse("2019-03-12T00:00:00Z")));
+            thing.getDatastreams().add(ds2);
+        }
         service.create(thing);
     }
 

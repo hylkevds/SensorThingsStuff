@@ -22,6 +22,12 @@ import de.fraunhofer.iosb.ilt.sta.service.TokenManagerOpenIDConnect;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 /**
  *
@@ -29,12 +35,13 @@ import java.net.URL;
  */
 public class Constants {
 
-    public static final String BASE_URL = "http://localhost:8080/SensorThingsService/v1.0/";
-    public static final boolean USE_OPENID_CONNECT = false;
-    public static final String TOKEN_SERVER_URL = "http://localhost:8180/auth/realms/sensorThings/protocol/openid-connect/token";
-    public static final String CLIENT_ID = "";
-    public static final String USERNAME = "";
-    public static final String PASSWORD = "";
+    public static String BASE_URL = "http://localhost:8080/SensorThingsService/v1.0/";
+    public static boolean USE_OPENID_CONNECT = false;
+    public static boolean USE_BASIC_AUTH = false;
+    public static String TOKEN_SERVER_URL = "http://localhost:8180/auth/realms/sensorThings/protocol/openid-connect/token";
+    public static String CLIENT_ID = "";
+    public static String USERNAME = "";
+    public static String PASSWORD = "";
 
     public static SensorThingsService createService() throws MalformedURLException, URISyntaxException {
         return createService(BASE_URL);
@@ -50,11 +57,22 @@ public class Constants {
         if (USE_OPENID_CONNECT) {
             service.setTokenManager(
                     new TokenManagerOpenIDConnect()
-                    .setTokenServerUrl(TOKEN_SERVER_URL)
-                    .setClientId(CLIENT_ID)
-                    .setUserName(USERNAME)
-                    .setPassword(PASSWORD)
+                            .setTokenServerUrl(TOKEN_SERVER_URL)
+                            .setClientId(CLIENT_ID)
+                            .setUserName(USERNAME)
+                            .setPassword(PASSWORD)
             );
+        }
+        if (USE_BASIC_AUTH) {
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            URL url = new URL(BASE_URL);
+            credsProvider.setCredentials(
+                    new AuthScope(url.getHost(), url.getPort()),
+                    new UsernamePasswordCredentials(USERNAME, PASSWORD));
+            CloseableHttpClient httpclient = HttpClients.custom()
+                    .setDefaultCredentialsProvider(credsProvider)
+                    .build();
+            service.setClient(httpclient);
         }
         return service;
     }
