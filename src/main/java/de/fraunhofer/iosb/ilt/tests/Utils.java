@@ -109,7 +109,7 @@ public class Utils {
         boolean more = true;
         int count = 0;
         while (more) {
-            EntityList<T> entities = doa.query().list();
+            EntityList<T> entities = doa.query().count().list();
             if (entities.getCount() > 0) {
                 LOGGER.info("{} to go.", entities.getCount());
             } else {

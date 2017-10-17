@@ -149,6 +149,7 @@ public class CreateEntities {
         Thing thing = new Thing("Thing 1", "The first thing.");
         thing.setProperties(properties1);
         service.create(thing);
+        LOGGER.info("id: " + thing.getId());
         things.add(thing);
 
         Map<String, Object> properties2 = new HashMap<>();

@@ -18,6 +18,9 @@ package de.fraunhofer.iosb.ilt.tests;
 
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import org.slf4j.Logger;
@@ -40,8 +43,12 @@ public class DeleteEntities {
      * @throws java.net.MalformedURLException
      * @throws java.net.URISyntaxException
      */
-    public static void main(String[] args) throws ServiceFailureException, MalformedURLException, URISyntaxException {
+    public static void main(String[] args) throws ServiceFailureException, MalformedURLException, URISyntaxException, IOException {
         LOGGER.info("Deleting all from {}", Constants.BASE_URL);
+        LOGGER.warn("Press Enter to execute.");
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(System.in, "UTF-8"))) {
+            input.read();
+        }
         SensorThingsService service = Constants.createService();
         Utils.deleteAll(service);
     }
