@@ -45,6 +45,11 @@
             <name>bintray</name>
             <url>http://dl.bintray.com/fraunhoferiosb/Maven</url>
         </repository>
+        <repository>
+            <id>osgeo</id>
+            <name>Open Source Geospatial Foundation Repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -55,8 +60,8 @@
         </dependency>
         <dependency>
             <groupId>de.fraunhofer.iosb.ilt</groupId>
-            <artifactId>SensorThingsClient</artifactId>
-            <version>0.10</version>
+            <artifactId>FROST-Client</artifactId>
+            <version>0.15</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -79,6 +84,11 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
             <version>16.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.5</version>
         </dependency>
     </dependencies>
 

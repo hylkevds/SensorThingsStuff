@@ -19,6 +19,7 @@ package de.fraunhofer.iosb.ilt.tests;
 import de.fraunhofer.iosb.ilt.sta.ServiceFailureException;
 import de.fraunhofer.iosb.ilt.sta.dao.BaseDao;
 import de.fraunhofer.iosb.ilt.sta.model.Entity;
+import de.fraunhofer.iosb.ilt.sta.model.Id;
 import de.fraunhofer.iosb.ilt.sta.model.ext.EntityList;
 import de.fraunhofer.iosb.ilt.sta.service.SensorThingsService;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class Utils {
     }
 
     public static Entity findEntityIn(Entity entity, List<? extends Entity> entities) {
-        Long id = entity.getId();
+        Id id = entity.getId();
         for (Entity inList : entities) {
             if (Objects.equals(inList.getId(), id)) {
                 return inList;
