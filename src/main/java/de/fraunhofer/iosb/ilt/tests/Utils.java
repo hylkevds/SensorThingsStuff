@@ -1,4 +1,3 @@
-/* kathi was here */
 /*
  * Copyright (C) 2016 Hylke van der Schaaf.
  *
